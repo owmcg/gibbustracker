@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gibraltar Bus Tracker - Lite</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Additional styles for the lite version */
+        .demo-banner {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #92400e;
+            text-align: center;
+            padding: 1rem;
+            font-weight: 600;
+            border-bottom: 3px solid #d97706;
+        }
+        
+        .api-endpoint {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        
+        .demo-data {
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .coming-soon {
+            opacity: 0.6;
+            position: relative;
+        }
+        
+        .coming-soon::after {
+            content: "Coming Soon";
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--warning-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Banner -->
+    <div class="demo-banner">
+        <i class="fas fa-code"></i>
+        This is a demonstration of the Gibraltar Bus Tracker API. 
+        <strong>Install Python and run the full web server for the complete experience!</strong>
+    </div>
+
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-bus"></i>
+                        <h1>Gibraltar Bus Tracker</h1>
+                    </div>
+                    <div class="header-controls">
+                        <div class="status-indicator">
+                            <span class="status-dot"></span>
+                            <span>API Demo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- API Success Section -->
+                <section class="api-success">
+                    <h2>✅ API Discovery Successful!</h2>
+                    <p>We successfully reverse-engineered the Gibraltar Bus Tracker and discovered the real-time API endpoint:</p>
+                    
+                    <div class="api-endpoint">
+                        <strong>Base URL:</strong> https://track.bus.gi<br>
+                        <strong>Endpoint:</strong> /busTracker.php?id={route_id}<br>
+                        <strong>Routes:</strong> 1, 2, 3, 7, 8, 9, N1, N8E, N8S<br>
+                        <strong>Update Frequency:</strong> Every 4 seconds
+                    </div>
+
+                    <h3>Live Data Sample (Current):</h3>
+                    <div class="demo-data">
+                        <h4>🚌 Route 2 - ACTIVE</h4>
+                        <ul>
+                            <li><strong>Bus 22a</strong> - Last seen: 07/10/2025 21:48:28</li>
+                            <li><strong>Bus 6a</strong> - Last seen: 07/10/2025 21:48:28</li>
+                        </ul>
+                        
+                        <h4>🚌 Route 8 - ACTIVE</h4>
+                        <ul>
+                            <li><strong>Bus 10a</strong> - Last seen: 07/10/2025 21:48:31</li>
+                        </ul>
+                        
+                        <h4>Routes 1, 3, 7, 9, N1, N8E, N8S</h4>
+                        <p><em>No buses currently active</em></p>
+                    </div>
+                </section>
+
+                <!-- Feature Showcase -->
+                <section class="features">
+                    <h2>Enhanced Features Ready</h2>
+                    <p>Our modern bus tracker includes these advanced features:</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>Real-time Tracking</h3>
+                            <p>Live bus positions updated every 30 seconds with location estimation and route mapping.</p>
+                        </div>
+                        
+                        <div class="feature-card coming-soon">
+                            <div class="feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Smart ETAs</h3>
+                            <p>Estimated arrival times considering current traffic conditions and route patterns.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h3>Mobile Optimized</h3>
+                            <p>Progressive Web App with offline capabilities and mobile-first design.</p>
+                        </div>
+                        
+                        <div class="feature-card coming-soon">
+                            <div class="feature-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <h3>Route Planning</h3>
+                            <p>Multi-stop journey planning with transfer suggestions and walking directions.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Analytics</h3>
+                            <p>Historical data, route performance, and service reliability metrics.</p>
+                        </div>
+                        
+                        <div class="feature-card coming-soon">
+                            <div class="feature-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <h3>Notifications</h3>
+                            <p>Push notifications for bus arrivals, delays, and service updates.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Technical Implementation -->
+                <section class="technical">
+                    <h2>Technical Implementation</h2>
+                    
+                    <div class="analytics-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Flask</h3>
+                                <p>Python Backend</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-map"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Leaflet.js</h3>
+                                <p>Interactive Maps</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>SQLite</h3>
+                                <p>Data Storage</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Real-time</h3>
+                                <p>Auto Updates</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Setup Instructions -->
+                <section class="setup">
+                    <h2>🚀 Get Started</h2>
+                    
+                    <div class="setup-steps">
+                        <h3>Quick Start (Recommended):</h3>
+                        <ol>
+                            <li><strong>Install Python 3.8+</strong> from <a href="https://www.python.org/downloads/" target="_blank">python.org</a></li>
+                            <li><strong>Run the setup:</strong> Double-click <code>start_server.bat</code></li>
+                            <li><strong>Open your browser:</strong> Go to <code>http://localhost:5000</code></li>
+                            <li><strong>Enjoy!</strong> Full-featured bus tracking with maps and analytics</li>
+                        </ol>
+                        
+                        <h3>Manual Setup:</h3>
+                        <div class="api-endpoint">
+                            pip install -r requirements.txt<br>
+                            python server.py
+                        </div>
+                        
+                        <h3>PowerShell Only (Current):</h3>
+                        <div class="api-endpoint">
+                            .\gibraltar_bus_api_final.ps1
+                        </div>
+                    </div>
+                </section>
+
+                <!-- API Documentation -->
+                <section class="api-docs">
+                    <h2>📚 API Documentation</h2>
+                    
+                    <h3>Available Endpoints:</h3>
+                    <div class="api-endpoint">
+                        <strong>GET /api/buses</strong> - All bus data<br>
+                        <strong>GET /api/buses/{route_id}</strong> - Specific route<br>
+                        <strong>GET /api/routes</strong> - Available routes<br>
+                        <strong>GET /api/stops/{route_id}</strong> - Route stops<br>
+                        <strong>GET /api/eta</strong> - Calculate arrival times<br>
+                        <strong>GET /api/status</strong> - System status
+                    </div>
+                    
+                    <h3>Data Format Example:</h3>
+                    <div class="api-endpoint">
+{<br>
+&nbsp;&nbsp;"route_id": "2",<br>
+&nbsp;&nbsp;"status": "active",<br>
+&nbsp;&nbsp;"timestamp": "07/10/2025 21:48:28",<br>
+&nbsp;&nbsp;"buses": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"bus_id": "22a",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"estimated_location": {"name": "Winston Churchill Ave"},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"last_seen": "07/10/2025 21:48:28"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;]<br>
+}
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h4>About This Project</h4>
+                        <p>Modern bus tracking for Gibraltar built by reverse-engineering the official tracker API.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Features Implemented</h4>
+                        <ul>
+                            <li>✅ Real-time bus API discovery</li>
+                            <li>✅ PowerShell API client</li>
+                            <li>✅ Python API client</li>
+                            <li>✅ Modern web interface</li>
+                            <li>✅ Interactive maps ready</li>
+                            <li>✅ Mobile-responsive design</li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Data Sources</h4>
+                        <ul>
+                            <li>Gibraltar Bus Tracker (track.bus.gi)</li>
+                            <li>Gibraltar Bus Company</li>
+                            <li>OpenStreetMap (for enhanced features)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 Gibraltar Bus Tracker Enhancement Project. Data provided by Gibraltar Bus Company.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Simple demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Gibraltar Bus Tracker Demo Loaded');
+            
+            // Simulate status updates
+            const statusDot = document.querySelector('.status-dot');
+            const statuses = ['connected', 'loading', 'warning'];
+            let currentStatus = 0;
+            
+            setInterval(() => {
+                statusDot.className = `status-dot ${statuses[currentStatus]}`;
+                currentStatus = (currentStatus + 1) % statuses.length;
+            }, 3000);
+            
+            // Log API information
+            console.log('Gibraltar Bus API discovered:');
+            console.log('Base URL: https://track.bus.gi');
+            console.log('Endpoint: /busTracker.php?id={route_id}');
+            console.log('Routes: 1, 2, 3, 7, 8, 9, N1, N8E, N8S');
+        });
+    </script>
+</body>
+</html>

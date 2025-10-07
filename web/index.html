@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gibraltar Bus Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e30613">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-bus"></i>
+                        <h1>Gibraltar Bus Tracker</h1>
+                    </div>
+                    <div class="header-controls">
+                        <button id="refreshBtn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                        <div class="status-indicator">
+                            <span id="statusDot" class="status-dot"></span>
+                            <span id="statusText">Connecting...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Route Summary Cards -->
+                <section class="route-summary">
+                    <h2>Live Bus Status</h2>
+                    <div id="routeCards" class="route-cards">
+                        <!-- Route cards will be dynamically generated -->
+                    </div>
+                </section>
+
+                <!-- Interactive Map -->
+                <section class="map-section">
+                    <div class="map-header">
+                        <h2>Real-time Map</h2>
+                        <div class="map-controls">
+                            <button id="centerMapBtn" class="btn btn-secondary">
+                                <i class="fas fa-crosshairs"></i>
+                                Center on Gibraltar
+                            </button>
+                            <select id="routeFilter" class="route-select">
+                                <option value="all">All Routes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="map" class="map-container"></div>
+                </section>
+
+                <!-- Detailed Bus Information -->
+                <section class="bus-details">
+                    <h2>Bus Details</h2>
+                    <div id="busTable" class="bus-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Route</th>
+                                    <th>Bus ID</th>
+                                    <th>Status</th>
+                                    <th>Last Update</th>
+                                    <th>Estimated Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="busTableBody">
+                                <!-- Table rows will be dynamically generated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Analytics Dashboard -->
+                <section class="analytics">
+                    <h2>Analytics</h2>
+                    <div class="analytics-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalBuses">0</h3>
+                                <p>Active Buses</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="activeRoutes">0</h3>
+                                <p>Active Routes</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="lastUpdate">--</h3>
+                                <p>Last Update</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-signal"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="systemStatus">--</h3>
+                                <p>System Status</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h4>About</h4>
+                        <p>Modern bus tracking for Gibraltar using real-time data from the official bus tracker system.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Features</h4>
+                        <ul>
+                            <li>Real-time bus locations</li>
+                            <li>Traffic-aware ETAs</li>
+                            <li>Route planning</li>
+                            <li>Mobile optimized</li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Data Sources</h4>
+                        <ul>
+                            <li>Gibraltar Bus Company</li>
+                            <li>OpenStreetMap</li>
+                            <li>Traffic data providers</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 Gibraltar Bus Tracker. Data provided by Gibraltar Bus Company.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-bus fa-spin"></i>
+            <p>Loading bus data...</p>
+        </div>
+    </div>
+
+    <!-- Bus Detail Modal -->
+    <div id="busModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Bus Details</h3>
+                <button id="closeModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/api.js"></script>
+</body>
+</html>
