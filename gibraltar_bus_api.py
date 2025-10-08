@@ -66,8 +66,9 @@ class GibraltarBusAPI:
                 result['status'] = 'active'
             
             # Extract bus positions (image references indicate bus locations)
-            bus_pattern = rf"src='R{route_id}/c(\d+[a-z]*)\.png'"
-            bus_matches = re.findall(bus_pattern, content)
+            # Pattern handles both single and double quotes, case-insensitive
+            bus_pattern = rf"src=['\"]R{route_id}/c(\d+[a-z]*)\.png['\"]"
+            bus_matches = re.findall(bus_pattern, content, re.IGNORECASE)
             
             for bus_id in bus_matches:
                 result['buses'].append({
