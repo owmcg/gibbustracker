@@ -9,8 +9,13 @@ import requests
 import re
 import json
 import time
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class GibraltarBusAPI:
     """
@@ -40,10 +45,12 @@ class GibraltarBusAPI:
         url = f"{self.base_url}/busTracker.php?id={route_id}"
         
         try:
+            logger.debug(f"Fetching bus data for route {route_id} from {url}")
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
             
             content = response.text
+            logger.debug(f"Received {len(content)} bytes of HTML for route {route_id}")
             
             result = {
                 'route_id': route_id,
@@ -57,6 +64,7 @@ class GibraltarBusAPI:
             # Check if buses are available
             if "Bus Location is Currently Unavailable" in content:
                 result['status'] = 'no_buses_active'
+                logger.info(f"Route {route_id}: No buses currently active")
                 return result
             
             # Extract timestamp
@@ -66,8 +74,9 @@ class GibraltarBusAPI:
                 result['status'] = 'active'
             
             # Extract bus positions (image references indicate bus locations)
-            bus_pattern = rf"src='R{route_id}/c(\d+[a-z]*)\.png'"
-            bus_matches = re.findall(bus_pattern, content)
+            # Pattern handles both single and double quotes, case-insensitive
+            bus_pattern = rf"src=['\"]R{route_id}/c(\d+[a-z]*)\.png['\"]"
+            bus_matches = re.findall(bus_pattern, content, re.IGNORECASE)
             
             for bus_id in bus_matches:
                 result['buses'].append({
@@ -76,9 +85,11 @@ class GibraltarBusAPI:
                     'full_image_url': f"{self.base_url}/R{route_id}/c{bus_id}.png"
                 })
             
+            logger.info(f"Route {route_id}: Found {len(result['buses'])} buses - Status: {result['status']}")
             return result
             
         except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching route {route_id}: {str(e)}")
             return {
                 'route_id': route_id,
                 'status': 'error',

@@ -9,11 +9,16 @@ import requests
 import re
 import json
 import time
+import logging
 from datetime import datetime, timedelta
 import threading
 from apscheduler.schedulers.background import BackgroundScheduler
 import sqlite3
 import os
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder='web', static_folder='web', static_url_path='')
 CORS(app)
@@ -67,15 +72,18 @@ class EnhancedGibraltarBusAPI:
         
         if cache_key in self.cache and cache_key in self.last_update:
             if (now - self.last_update[cache_key]).seconds < 30:
+                logger.debug(f"Returning cached data for route {route_id}")
                 return self.cache[cache_key]
         
         url = f"{self.base_url}/busTracker.php?id={route_id}"
         
         try:
+            logger.debug(f"Fetching bus data for route {route_id} from {url}")
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
             
             content = response.text
+            logger.debug(f"Received {len(content)} bytes of HTML for route {route_id}")
             
             result = {
                 'route_id': route_id,
@@ -89,6 +97,7 @@ class EnhancedGibraltarBusAPI:
             # Check if buses are available
             if "Bus Location is Currently Unavailable" in content:
                 result['status'] = 'no_buses_active'
+                logger.info(f"Route {route_id}: No buses currently active")
             else:
                 # Extract timestamp
                 timestamp_match = re.search(r'Last Updated: ([^-]+)', content)
@@ -97,8 +106,9 @@ class EnhancedGibraltarBusAPI:
                     result['status'] = 'active'
                 
                 # Extract bus positions
-                bus_pattern = rf"src='R{route_id}/c(\d+[a-z]*)\.png'"
-                bus_matches = re.findall(bus_pattern, content)
+                # Pattern handles both single and double quotes, case-insensitive
+                bus_pattern = rf"src=['\"]R{route_id}/c(\d+[a-z]*)\.png['\"]"
+                bus_matches = re.findall(bus_pattern, content, re.IGNORECASE)
                 
                 for bus_id in bus_matches:
                     bus_data = {
@@ -109,6 +119,8 @@ class EnhancedGibraltarBusAPI:
                         'last_seen': result['timestamp']
                     }
                     result['buses'].append(bus_data)
+                
+                logger.info(f"Route {route_id}: Found {len(result['buses'])} buses - Status: {result['status']}")
             
             # Store in database
             self.store_bus_data(result)
@@ -120,6 +132,7 @@ class EnhancedGibraltarBusAPI:
             return result
             
         except Exception as e:
+            logger.error(f"Error fetching route {route_id}: {str(e)}")
             return {
                 'route_id': route_id,
                 'status': 'error',
@@ -329,6 +342,63 @@ def get_system_status():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/diagnostic/<route_id>')
+def get_route_diagnostic(route_id):
+    """Diagnostic endpoint to help troubleshoot bus fetching issues"""
+    try:
+        if route_id not in bus_api.routes:
+            return jsonify({'success': False, 'error': 'Invalid route ID'}), 400
+        
+        # Get fresh data (bypass cache)
+        url = f"{bus_api.base_url}/busTracker.php?id={route_id}"
+        
+        try:
+            response = bus_api.session.get(url, timeout=10)
+            response.raise_for_status()
+            content = response.text
+            
+            # Check for various patterns
+            has_unavailable_msg = "Bus Location is Currently Unavailable" in content
+            timestamp_match = re.search(r'Last Updated: ([^-]+)', content)
+            
+            # Try both single and double quote patterns
+            single_quote_pattern = rf"src='R{route_id}/c(\d+[a-z]*)\.png'"
+            double_quote_pattern = rf'src="R{route_id}/c(\d+[a-z]*)\.png"'
+            robust_pattern = rf"src=['\"]R{route_id}/c(\d+[a-z]*)\.png['\"]"
+            
+            single_matches = re.findall(single_quote_pattern, content)
+            double_matches = re.findall(double_quote_pattern, content)
+            robust_matches = re.findall(robust_pattern, content, re.IGNORECASE)
+            
+            return jsonify({
+                'success': True,
+                'route_id': route_id,
+                'url': url,
+                'diagnostic': {
+                    'response_size': len(content),
+                    'has_unavailable_message': has_unavailable_msg,
+                    'has_timestamp': timestamp_match is not None,
+                    'timestamp': timestamp_match.group(1).strip() if timestamp_match else None,
+                    'buses_found_single_quotes': len(single_matches),
+                    'buses_found_double_quotes': len(double_matches),
+                    'buses_found_robust': len(robust_matches),
+                    'bus_ids_single': single_matches,
+                    'bus_ids_double': double_matches,
+                    'bus_ids_robust': robust_matches,
+                    'html_preview': content[:500] if len(content) < 500 else content[:500] + '...'
+                }
+            })
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'route_id': route_id,
+                'error': str(e),
+                'error_type': type(e).__name__
+            }), 500
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # Background task to update bus data
 def update_bus_data():
     """Background task to regularly update bus data"""
@@ -353,6 +423,7 @@ if __name__ == '__main__':
     print("  GET /api/stops/<route_id> - Route stops")
     print("  GET /api/eta - Calculate arrival times")
     print("  GET /api/status - System status")
+    print("  GET /api/diagnostic/<route_id> - Diagnostic info for troubleshooting")
     print("\nWeb Interface: http://localhost:5000")
     
     app.run(debug=True, host='0.0.0.0', port=5000)
